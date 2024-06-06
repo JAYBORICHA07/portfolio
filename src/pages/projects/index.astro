@@ -1,0 +1,111 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import PostRow from "../../components/Blog/PostRow.astro";
+import ProjectCard from "../../components/Project/ProjectCard.astro";
+
+const projects = [
+  {
+    title: "FreeShopifyApps",
+    technology: [
+      "Next.js",
+      "Tailwind CSS",
+      "TypeScript",
+      "Vercel",
+      "prisma",
+      "postgresql",
+      "github",
+    ],
+    description:
+      "A site where you can find all the free apps for Shopify which is build in the Next.js framework with Tailwind CSS, TypeScript for the frontend and postgressql for the database and vercel for deployment.",
+    githubLink: "",
+    deployedLink: "https://freeshopifyapps.vercel.app/",
+    imageName: "/fsa.png",
+  },
+  {
+    title: "Patient-Data-Management-System",
+    technology: [
+      "React.js",
+      "Tailwind CSS",
+      "TypeScript",
+      "Vercel",
+      "supabase",
+      "postgresql",
+      "Express.js",
+      "Authentication",
+      "github",
+    ],
+    description:
+      "A patient data management system built with React.js, Tailwind CSS, TypeScript, Vercel, supabase, postgresql, and Express.js. It includes authentication and a dashboard for managing patient data.",
+    githubLink:
+      "https://github.com/JAYBORICHA07/Patient-Data-Management-System",
+    deployedLink: "https://patient-data-management-system.vercel.app/",
+    imageName: "/pdm.png",
+  },
+  {
+    title: "URL shortener",
+    technology: [
+      "React.js",
+      "Tailwind CSS",
+      "shadcn",
+      "JavaScript",
+      "Vercel",
+      "mongoDB",
+      "mongoose",
+      "github",
+    ],
+    description:
+      "A free URL shortener built with React.js, Tailwind CSS, shadcn, JavaScript, Vercel, mongoDB, and mongoose as database. It allows users to shorten and share URLs.",
+    githubLink: "https://github.com/JAYBORICHA07/urlshortner",
+    deployedLink: "https://minilinkr.vercel.app/",
+    imageName: "/us.png",
+  },
+  {
+    title: "Random Quote Generator",
+    technology: ["React.js", "JavaScript", "github", "github"],
+    description:
+      "This was my first ever project, A random quote generator built with React.js. It generates random quotes from marvel movies and it's deployed on github pages",
+    githubLink: "https://github.com/JAYBORICHA07/randomQuoteGenerator",
+    deployedLink: "https://quotegeneratorbyjayy.vercel.app/",
+    imageName: "/rqg.png",
+  },
+];
+---
+
+<script>
+  import { timeline, type TimelineDefinition } from "motion";
+  import { loaderAnimation } from "../../lib/constants";
+
+  const sequence = [loaderAnimation];
+
+  timeline(sequence as TimelineDefinition);
+</script>
+
+<Layout
+  title="Jay Boricha's - Blog"
+  description="Software developer with strong focus on the user experience animations and micro interactions"
+>
+  <main
+    class="w-screen h-screen flex flex-col justify-start items-start max-w-3xl mx-auto p-8"
+  >
+    <a
+      href="/"
+      class="text-white bg-neutral-900 hover:bg-neutral-800 px-4 py-2 mb-8 border-1 border-solid border-neutral-600 rounded-lg"
+      >Back</a
+    >
+    <h1 class="text-4xl font-bold mb-4 text-neutral-100">Projects</h1>
+    <ul class="w-full gap-2">
+      {
+        projects?.map((project) => (
+          <ProjectCard
+            title={project.title}
+            technology={project.technology}
+            description={project.description}
+            githubLink={project.githubLink}
+            deployedLink={project.deployedLink}
+            imageName={project.imageName}
+          />
+        ))
+      }
+    </ul>
+  </main>
+</Layout>

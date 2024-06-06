@@ -1,0 +1,55 @@
+---
+import Card from "../Card/index.astro";
+import Span from "../Span.astro";
+
+interface Props {
+  title: string;
+  technology: string[];
+  description: string;
+  githubLink: string;
+  deployedLink: string;
+  imageName: string;
+}
+
+const { title, technology, description, githubLink, deployedLink, imageName } =
+  Astro.props;
+---
+
+<li
+  class="w-full text-neutral-400 hover:text-neutral-50 ease-in-out transition-colors my-2"
+>
+  <div
+    class={`card h-max sm:h-auto group overflow-hidden transform-y-[-40%] bg-darkslate-500 shadow-lg rounded-lg p-6 border border-darkslate-100 hover:border-primary-500 align-start flex-none h-full justify-start relative transform perspective-1200 w-full transition duration-75 ease-in-out col-span-1 md:col-span-2`}
+  >
+    <div class="flex flex-col gap-2">
+      <div class="flex flex-col">
+        <img src={imageName} alt={title} class="h-[300px] object-fit" />
+      </div>
+      <div>
+        <p class="text-2xl font-bold">{title}</p>
+        <div class="flex gap-2 flex-wrap p-2">
+          {technology.map((tech) => <Span title={tech} />)}
+        </div>
+        <p class="p-2">
+          {description}
+        </p>
+        <div class="flex gap-2">
+          {
+            githubLink && (
+              <a href={githubLink} target="_blank">
+                <p class="font-extrabold">Github</p>
+              </a>
+            )
+          }
+          {
+            deployedLink && (
+              <a href={deployedLink} target="_blank">
+                <p class="font-extrabold">Demo</p>
+              </a>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</li>
