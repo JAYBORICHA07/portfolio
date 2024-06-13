@@ -2,10 +2,10 @@
 import BasicLayout from "./BasicLayout.astro";
 
 interface Props {
-	title: string;
-	description: string;
-	page?: string;
-	fullScreen?: string;
+  title: string;
+  description: string;
+  page?: "blog";
+  fullScreen?: string;
 }
 
 const { title, description, page, fullScreen } = Astro.props;
