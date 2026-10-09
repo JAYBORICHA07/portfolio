@@ -1,0 +1,105 @@
+---
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import BaseLayout from "./BaseLayout.astro";
+import ReadingProgress from "../components/ReadingProgress.astro";
+import { formatDate } from "../lib/helpers";
+import { SITE, SOCIALS } from "../lib/constants";
+import me from "../assets/me.png";
+
+interface Neighbour {
+  title: string;
+  url: string;
+}
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  minutesRead?: string;
+  category?: string;
+  prev?: Neighbour;
+  next?: Neighbour;
+}
+const { title, description, pubDate, minutesRead, category, prev, next } = Astro.props;
+---
+
+<BaseLayout title={`${title} · ${SITE.name}`} description={description} type="article">
+  <ReadingProgress />
+
+  <div class="container-page pt-10 md:pt-16">
+    <div class="mx-auto max-w-prose">
+      <a
+        href="/blog"
+        class="group inline-flex items-center gap-1 text-small text-subtle transition-colors duration-160 ease-standard @hover:text-fg"
+      >
+        <Icon name="ri:arrow-left-line" class="h-3.5 w-3.5 transition-transform duration-200 ease-out group-hover:-translate-x-px" />
+        Writing
+      </a>
+
+      <header class="mt-8 border-b border-line pb-8">
+        {category && <p class="label-mono text-accent">{category}</p>}
+        <h1 class="mt-3 max-w-[22ch] text-title font-700 text-fg">{title}</h1>
+        <p class="text-meta-mono mt-4">
+          <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+          {minutesRead && <span> · {minutesRead}</span>}
+        </p>
+      </header>
+
+      <article class="prose mt-10 max-w-none">
+        <slot />
+      </article>
+
+      <aside class="card mt-16 flex items-start gap-4 p-5 sm:items-center">
+        <Image
+          src={me}
+          alt=""
+          width={96}
+          densities={[1, 2]}
+          class="h-12 w-12 flex-none rounded-full object-cover object-top"
+        />
+        <div class="min-w-0">
+          <p class="text-small font-500 text-fg">Written by {SITE.name}</p>
+          <p class="mt-0.5 text-small text-muted">Software engineer on payments infrastructure at Petpooja.</p>
+          <ul class="mt-2 flex flex-wrap gap-x-4 text-small">
+            {
+              SOCIALS.map(({ label, href }) => (
+                <li>
+                  <a href={href} target="_blank" rel="noopener noreferrer" class="link-accent no-underline">
+                    {label} ↗
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </aside>
+
+      {
+        (prev || next) && (
+          <nav aria-label="Adjacent posts" class="mt-10 grid gap-4 border-t border-line pt-8 sm:grid-cols-2">
+            <div>
+              {prev && (
+                <a href={prev.url} class="group block">
+                  <span class="label-mono">← Previous</span>
+                  <span class="mt-1 block truncate text-small font-500 text-fg transition-colors duration-160 ease-standard group-hover:text-accent">
+                    {prev.title}
+                  </span>
+                </a>
+              )}
+            </div>
+            <div class="sm:text-right">
+              {next && (
+                <a href={next.url} class="group block">
+                  <span class="label-mono">Next →</span>
+                  <span class="mt-1 block truncate text-small font-500 text-fg transition-colors duration-160 ease-standard group-hover:text-accent">
+                    {next.title}
+                  </span>
+                </a>
+              )}
+            </div>
+          </nav>
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>

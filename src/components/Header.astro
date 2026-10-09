@@ -1,0 +1,44 @@
+---
+import ThemeToggle from "./ThemeToggle.astro";
+import { NAV, SITE } from "../lib/constants";
+
+const path = Astro.url.pathname;
+const isHome = path === "/";
+const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
+---
+
+<header class="site-header sticky top-0 z-40 bg-canvas/80 backdrop-blur-md">
+  <div class="container-page flex h-16 items-center justify-between gap-4 md:h-18">
+    {
+      isHome ? (
+        <span class="text-small font-500 text-fg">{SITE.name}</span>
+      ) : (
+        <a href="/" class="text-small font-500 text-fg">
+          {SITE.name}
+        </a>
+      )
+    }
+
+    <nav aria-label="Primary" class="flex items-center gap-5 sm:gap-6">
+      {
+        NAV.map(({ label, href }) => (
+          <a
+            href={href}
+            class="nav-link text-[13px] font-450 sm:text-small"
+            aria-current={isActive(href) ? "page" : undefined}
+          >
+            {label}
+          </a>
+        ))
+      }
+      <ThemeToggle />
+    </nav>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>(".site-header");
+  const update = () => header?.classList.toggle("is-scrolled", window.scrollY > 8);
+  update();
+  window.addEventListener("scroll", update, { passive: true });
+</script>

@@ -1,0 +1,222 @@
+---
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionLabel from "../components/SectionLabel.astro";
+import ContactCard from "../components/ContactCard.astro";
+import { LINKS, SITE } from "../lib/constants";
+import me from "../assets/me.png";
+
+const expertise = [
+  {
+    tier: "AI systems",
+    tone: "text-fg",
+    items: [
+      "Structured extraction",
+      "RAG & hybrid retrieval",
+      "Tool-calling agents",
+      "Evals & regression testing",
+      "Guardrails & human-in-the-loop",
+      "Prompt & context design",
+      "Cost & latency budgeting",
+    ],
+  },
+  {
+    tier: "Payments & systems",
+    tone: "text-muted",
+    items: [
+      "Offline payment rails (EDC, QR)",
+      "Settlement & reconciliation",
+      "Idempotent webhooks",
+      "Payment orchestration",
+      "Postgres performance",
+      "Zero-downtime schema evolution",
+    ],
+  },
+];
+
+const stack = [
+  "TypeScript",
+  "Node.js",
+  "React",
+  "Next.js",
+  "PostgreSQL · pgvector",
+  "Prisma",
+  "Anthropic & OpenAI APIs",
+  "LangChain · LangGraph",
+  "Zod",
+  "Redis",
+  "Docker",
+];
+
+const aiTools = [
+  { name: "Claude Code", use: "multi-file changes, refactors, and reading unfamiliar code fast" },
+  { name: "Cursor", use: "in-editor work and line-level iteration" },
+  { name: "ChatGPT & Claude", use: "design discussion, debugging, and research" },
+];
+---
+
+<BaseLayout
+  title={`About · ${SITE.name}`}
+  description="Jay Boricha — software engineer building practical AI workflows, with production discipline from offline payments infrastructure at Petpooja."
+>
+  <div class="container-page pt-10 md:pt-16">
+    <div class="max-w-[640px]">
+      <h1 class="text-title font-700 text-fg">About</h1>
+      <p class="mt-4 text-lead text-muted">
+        Software engineer building practical AI workflows — document pipelines, assistants, agents — with the
+        production discipline that comes from working on payments.
+      </p>
+
+      <Image
+        src={me}
+        alt={`Photo of ${SITE.name}`}
+        width={320}
+        densities={[1, 2]}
+        class="mt-8 h-24 w-24 rounded-[14px] object-cover object-top sm:h-32 sm:w-32 lg:h-40 lg:w-40"
+        loading="eager"
+      />
+
+      <!-- Bio -->
+      <section aria-labelledby="bio" class="reveal mt-14">
+        <SectionLabel id="bio" label="Bio" />
+        <div class="space-y-5 pt-6 text-body text-muted">
+          <p>
+            Most LLM demos fall over the first week they meet real data: a PDF the extractor hasn't seen, a question
+            the docs don't answer, an agent that retries and does the thing twice. The work I care about is the part
+            after the demo — the evals, the confidence gates, the human sign-off, the idempotent side effects — that
+            turns a promising prototype into something a business can actually run on.
+          </p>
+          <p>
+            That instinct comes from my day job. At
+            <a href={LINKS.petpooja} target="_blank" rel="noopener noreferrer" class="link-accent">Petpooja</a>
+            I work on offline payments infrastructure — card terminals, QR, settlement and reconciliation — for
+            restaurants and retail stores across India. In payments, a retried request can't be allowed to move money
+            twice, and “probably correct” isn't a state. I hold AI systems to the same bar.
+          </p>
+          <p>
+            I came to all of it through the web — TypeScript, React, Node — and I have preferred tools but no
+            loyalties. The job is to find the solution that fits the problem, and most of the interesting decisions
+            are about what <em>not</em> to automate.
+          </p>
+        </div>
+      </section>
+
+      <!-- Expertise: AI systems lead, payments is the credibility, stack is quietest -->
+      <section aria-labelledby="expertise" class="reveal mt-14">
+        <SectionLabel id="expertise" label="Expertise" />
+        <div class="divide-y divide-line">
+          {
+            expertise.map(({ tier, tone, items }) => (
+              <div class="py-6">
+                <h3 class="text-sub font-600 text-fg">{tier}</h3>
+                <ul class={`mt-3 flex flex-wrap gap-x-2 gap-y-1.5 text-body ${tone}`}>
+                  {items.map((item, i) => (
+                    <li class="flex items-center gap-2">
+                      {i > 0 && <span class="text-line-strong" aria-hidden="true">·</span>}
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+          <div class="py-6">
+            <h3 class="label-mono">Stack</h3>
+            <p class="text-meta-mono mt-3">{stack.join(" · ")}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- How I build with AI -->
+      <section aria-labelledby="ai" class="reveal mt-14">
+        <SectionLabel id="ai" label="How I build with AI" />
+        <div class="space-y-8 pt-6 text-body text-muted">
+          <p class="text-lead">
+            AI is a tool in my editor and a component in my products, not a bullet on my résumé. Here's the honest
+            version.
+          </p>
+
+          <div>
+            <h3 class="text-sub font-600 text-fg">In production</h3>
+            <!-- TODO(jay): add model/API names and one measurable outcome -->
+            <p class="mt-2">
+              I've shipped LLM-backed features: conversational assistants, retrieval over documents, structured
+              extraction and summarization pipelines, and tool-calling agents. The interesting work is rarely the
+              prompt — it's the evals, the fallbacks, and deciding what the model is never allowed to decide.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-sub font-600 text-fg">What a workflow needs before I'd call it done</h3>
+            <ul class="mt-3 list-disc space-y-2 pl-5 marker:text-subtle">
+              <li>An eval set built from real cases — and a regression run before any prompt or model change.</li>
+              <li>A confidence signal, and a human review path for everything below the threshold.</li>
+              <li>Idempotent side effects, so a retry never sends the email or moves the money twice.</li>
+              <li>A cost and latency budget per request, measured, not estimated.</li>
+              <li>An honest failure mode: “I don't know” beats a fluent wrong answer.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="text-sub font-600 text-fg">Where it doesn't help</h3>
+            <p class="mt-2">
+              Anything that needs to know <em>why</em> the system is built the way it is. Data modelling. Naming.
+              Deciding what not to build. It will confidently produce plausible code that quietly does the wrong
+              thing — and catching that is still the job. So I read everything it writes.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-sub font-600 text-fg">What I actually use</h3>
+            <ul class="mt-3 space-y-2">
+              {
+                aiTools.map(({ name, use }) => (
+                  <li class="grid gap-x-4 sm:grid-cols-[9rem_1fr]">
+                    <span class="text-meta-mono text-fg">{name}</span>
+                    <span>{use}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Experience -->
+      <section aria-labelledby="experience" class="reveal mt-14">
+        <SectionLabel id="experience" label="Experience" />
+        <div class="grid gap-2 pt-6 sm:grid-cols-[6rem_1fr] sm:gap-6">
+          <!-- TODO(jay): start date -->
+          <p class="text-meta-mono pt-0.5">[TODO] — Present</p>
+          <div>
+            <h3 class="text-sub font-600 text-fg">Software Engineer</h3>
+            <a href={LINKS.petpooja} target="_blank" rel="noopener noreferrer" class="group mt-1 inline-flex items-center gap-1 text-small text-muted @hover:text-accent">
+              Petpooja
+              <Icon name="ri:arrow-right-up-line" class="h-3.5 w-3.5 transition-transform duration-200 ease-out group-hover:translate-x-px group-hover:-translate-y-px" />
+            </a>
+            <!-- TODO(jay): replace with 2–4 specific, defensible bullets (what shipped, for whom, any numbers) -->
+            <ul class="mt-4 list-disc space-y-2 pl-5 text-body text-muted marker:text-subtle">
+              <li>Offline payments infrastructure: EDC card terminals, static and dynamic QR, settlement and reconciliation.</li>
+              <li>LLM-backed features in production — assistants, document retrieval, extraction pipelines, tool-calling agents.</li>
+              <li>Integrations with lending, wallet and POS partners; idempotent webhooks and fleet-scale polling.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Outside work -->
+      <section aria-labelledby="outside" class="reveal mt-14">
+        <SectionLabel id="outside" label="Outside work" />
+        <p class="pt-6 text-body text-muted">
+          Chess, cricket, and travel. I watch more chess streams than I'd like to admit — there's a lot to learn about
+          the game from people thinking out loud.
+        </p>
+      </section>
+    </div>
+
+    <div class="reveal mt-16 md:mt-24">
+      <ContactCard />
+    </div>
+  </div>
+</BaseLayout>

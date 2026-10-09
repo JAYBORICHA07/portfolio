@@ -1,0 +1,78 @@
+---
+import { Icon } from "astro-icon/components";
+import { EMAIL } from "../lib/constants";
+
+interface Props {
+  /** "ghost" = hero-sized button; "block" = full-width contact button. */
+  variant?: "ghost" | "block";
+}
+const { variant = "ghost" } = Astro.props;
+
+const base =
+  variant === "block"
+    ? "copy-email group flex w-full items-center justify-between gap-4 rounded-[10px] border border-line bg-canvas px-5 py-4 text-left font-500 text-fg transition-[background-color,border-color,transform] duration-160 ease-standard @hover:border-accent-border @hover:bg-accent-soft active:scale-[0.99]"
+    : "copy-email btn-ghost";
+---
+
+<button type="button" class={base} data-copy-email aria-label={`Copy ${EMAIL} to clipboard`}>
+  <span class="relative inline-grid overflow-hidden">
+    <span class:list={["copy-label col-start-1 row-start-1 break-all", variant === "block" && "text-[1.0625rem] sm:text-[1.1875rem]"]}>
+      {EMAIL}
+    </span>
+    <span class="copy-done col-start-1 row-start-1 text-accent" aria-hidden="true">Copied</span>
+  </span>
+  <span class="relative block h-4 w-4 flex-none" aria-hidden="true">
+    <Icon name="ri:file-copy-line" class="copy-icon absolute inset-0 h-4 w-4 text-subtle" />
+    <Icon name="ri:check-line" class="copy-icon-done absolute inset-0 h-4 w-4 text-accent" />
+  </span>
+  <span class="sr-only" data-copy-status role="status" aria-live="polite"></span>
+</button>
+
+<style is:global>
+  .copy-label,
+  .copy-done,
+  .copy-icon,
+  .copy-icon-done {
+    transition:
+      opacity 140ms var(--ease-standard),
+      transform 140ms var(--ease-standard);
+  }
+  .copy-done,
+  .copy-icon-done {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  .copy-email.is-copied .copy-label,
+  .copy-email.is-copied .copy-icon {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  .copy-email.is-copied .copy-done,
+  .copy-email.is-copied .copy-icon-done {
+    opacity: 1;
+    transform: none;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-copy-email]").forEach((btn) => {
+    const email = btn.querySelector(".copy-label")?.textContent?.trim() ?? "";
+    const status = btn.querySelector("[data-copy-status]");
+    let timer = 0;
+    btn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(email);
+      } catch {
+        window.location.href = `mailto:${email}`;
+        return;
+      }
+      btn.classList.add("is-copied");
+      if (status) status.textContent = "Email address copied";
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        btn.classList.remove("is-copied");
+        if (status) status.textContent = "";
+      }, 1600);
+    });
+  });
+</script>

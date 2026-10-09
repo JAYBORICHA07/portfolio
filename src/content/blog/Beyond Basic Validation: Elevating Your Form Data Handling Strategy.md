@@ -1,7 +1,6 @@
 ---
-layout: ../../layouts/LayoutBlogPost.astro
 title: "Beyond Basic Validation: Elevating Your Form Data Handling Strategy"
-description: ""
+description: "Why front-end validation matters, what it does and doesn't protect you from, and how to do it properly with schema-based tools."
 pubDate: 2023-03-10
 category: "DEV"
 ---

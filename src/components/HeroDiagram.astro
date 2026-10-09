@@ -1,0 +1,190 @@
+---
+/**
+ * HeroDiagram — the pipeline the hero copy describes, drawn as a schematic:
+ * intake → extract → validate → (human) review → commit.
+ *
+ * Geometry notes (viewBox 0 0 356 410), because the CSS timing depends on them:
+ * the route is ONE continuous path threaded through every node centre, drawn
+ * *under* the opaque node rects, so the travelling dash reads as a signal
+ * entering a stage and coming out the other side. `pathLength="100"` normalises
+ * it so the dash keyframes need no measuring.
+ *
+ * Node highlights are separate CSS animations on the same 9s loop. Each node's
+ * `animation-delay` places the pulse (keyframe 50%) at the moment the dash
+ * reaches it: D = (f - 0.5) * 9s, where f is the node's fraction along the
+ * 564.9u route. Values are in the table below — recompute them if you move a node.
+ *
+ * Deliberately carries no numbers: nothing here is a claim.
+ */
+---
+
+<svg
+  class="hero-diagram"
+  viewBox="0 0 356 410"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <linearGradient id="hd-fade" x1="0" y1="0" x2="0" y2="410" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity="0" />
+      <stop offset="0.05" stop-color="#fff" stop-opacity="1" />
+      <stop offset="0.93" stop-color="#fff" stop-opacity="1" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0" />
+    </linearGradient>
+    <mask id="hd-mask">
+      <rect width="356" height="410" fill="url(#hd-fade)" />
+    </mask>
+  </defs>
+
+  <!-- Wires, faded out at both edges so the stream reads as continuing off-canvas. -->
+  <g mask="url(#hd-mask)" stroke-linecap="round">
+    <!-- The bypass: validated-with-high-confidence skips the review gate. -->
+    <path
+      class="hd-bypass"
+      d="M262,196 H306 Q318,196 318,208 V352 Q318,364 306,364 H262"
+      stroke-width="1.25"
+      stroke-dasharray="3 4"
+    />
+
+    <!-- The route, threaded through every node centre. -->
+    <path class="hd-route" d="M178,0 V230 Q178,244 164,244 H104 Q90,244 90,258 V302 Q90,316 104,316 H164 Q178,316 178,330 V410" stroke-width="1.5" />
+    <path class="hd-trail" pathLength="100" d="M178,0 V230 Q178,244 164,244 H104 Q90,244 90,258 V302 Q90,316 104,316 H164 Q178,316 178,330 V410" stroke-width="5" stroke-dasharray="20 80" />
+    <path class="hd-packet" pathLength="100" d="M178,0 V230 Q178,244 164,244 H104 Q90,244 90,258 V302 Q90,316 104,316 H164 Q178,316 178,330 V410" stroke-width="2.25" stroke-dasharray="7 93" />
+  </g>
+
+  <!-- Branch annotations -->
+  <text class="hd-note" x="134" y="238" text-anchor="middle">low confidence</text>
+  <text class="hd-note" x="336" y="280" text-anchor="middle" transform="rotate(90 336 280)">high confidence</text>
+
+  <!-- Stages. f = fraction along route; delay = (f - 0.5) * 9s, kept negative. -->
+  <g class="hd-node hd-n1">           <!-- f .0496 -->
+    <rect x="94" y="6" width="168" height="44" rx="9" />
+    <text class="hd-label" x="178" y="24" text-anchor="middle">INTAKE</text>
+    <text class="hd-sub" x="178" y="39" text-anchor="middle">pdf · email · webhook</text>
+  </g>
+
+  <g class="hd-node hd-n2">           <!-- f .1983 — dashed edge: the probabilistic step -->
+    <rect x="94" y="90" width="168" height="44" rx="9" stroke-dasharray="4 3.5" />
+    <text class="hd-label" x="178" y="108" text-anchor="middle">EXTRACT</text>
+    <text class="hd-sub" x="178" y="123" text-anchor="middle">model · schema</text>
+  </g>
+
+  <g class="hd-node hd-n3">           <!-- f .3470 -->
+    <rect x="94" y="174" width="168" height="44" rx="9" />
+    <text class="hd-label" x="178" y="192" text-anchor="middle">VALIDATE</text>
+    <text class="hd-sub" x="178" y="207" text-anchor="middle">evals · confidence</text>
+  </g>
+
+  <g class="hd-node hd-n4">           <!-- f .6328 -->
+    <rect x="14" y="258" width="152" height="44" rx="9" />
+    <text class="hd-label" x="90" y="276" text-anchor="middle">REVIEW</text>
+    <text class="hd-sub" x="90" y="291" text-anchor="middle">human in the loop</text>
+  </g>
+
+  <g class="hd-node hd-n5">           <!-- f .9186 -->
+    <rect x="94" y="342" width="168" height="44" rx="9" />
+    <text class="hd-label" x="178" y="360" text-anchor="middle">COMMIT</text>
+    <text class="hd-sub" x="178" y="375" text-anchor="middle">idempotent · logged</text>
+  </g>
+</svg>
+
+<style>
+  .hero-diagram {
+    width: 100%;
+    height: auto;
+  }
+
+  /* ---- static ink ---- */
+  .hd-route,
+  .hd-bypass {
+    stroke: rgb(var(--c-line-strong));
+  }
+  .hd-node rect {
+    fill: rgb(var(--c-surface));
+    stroke: rgb(var(--c-line-strong));
+    stroke-width: 1.25;
+  }
+  .hd-label {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    fill: rgb(var(--c-fg));
+  }
+  .hd-sub,
+  .hd-note {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    fill: rgb(var(--c-subtle));
+  }
+
+  /* ---- the travelling signal ---- */
+  .hd-packet,
+  .hd-trail {
+    stroke: rgb(var(--c-accent));
+  }
+  .hd-trail {
+    opacity: 0.16;
+  }
+  .hd-packet {
+    animation: hd-flow 9s linear infinite;
+  }
+  .hd-trail {
+    animation: hd-flow-trail 9s linear infinite;
+  }
+
+  /* Dash offset runs one full pattern period, so the loop is seamless. The
+     trail is offset by +14 so it sits *behind* the head, not ahead of it. */
+  @keyframes hd-flow {
+    from { stroke-dashoffset: 100; }
+    to   { stroke-dashoffset: 0; }
+  }
+  @keyframes hd-flow-trail {
+    from { stroke-dashoffset: 114; }
+    to   { stroke-dashoffset: 14; }
+  }
+
+  /* ---- stage pulses ---- */
+  .hd-node rect {
+    animation: hd-rect 9s linear infinite;
+  }
+  .hd-node .hd-label {
+    animation: hd-text 9s linear infinite;
+  }
+
+  .hd-n1 rect, .hd-n1 .hd-label { animation-delay: -4.05s; }
+  .hd-n2 rect, .hd-n2 .hd-label { animation-delay: -2.72s; }
+  .hd-n3 rect, .hd-n3 .hd-label { animation-delay: -1.38s; }
+  .hd-n4 rect, .hd-n4 .hd-label { animation-delay: -7.81s; }
+  .hd-n5 rect, .hd-n5 .hd-label { animation-delay: -5.23s; }
+
+  @keyframes hd-rect {
+    0%, 44%, 64%, 100% {
+      stroke: rgb(var(--c-line-strong));
+      fill: rgb(var(--c-surface));
+    }
+    50%, 58% {
+      stroke: rgb(var(--c-accent));
+      fill: rgb(var(--c-accent-soft));
+    }
+  }
+  @keyframes hd-text {
+    0%, 44%, 64%, 100% { fill: rgb(var(--c-fg)); }
+    50%, 58%           { fill: rgb(var(--c-accent)); }
+  }
+
+  /* Still a legible schematic with everything held still. */
+  @media (prefers-reduced-motion: reduce) {
+    .hd-packet,
+    .hd-trail {
+      display: none;
+    }
+    .hd-node rect,
+    .hd-node .hd-label {
+      animation: none;
+    }
+  }
+</style>

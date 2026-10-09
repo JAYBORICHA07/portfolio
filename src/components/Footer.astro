@@ -1,0 +1,30 @@
+---
+import { Icon } from "astro-icon/components";
+import { SITE, SOCIALS } from "../lib/constants";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-16 border-t border-line md:mt-28">
+  <div class="container-page flex flex-col gap-4 py-10 sm:flex-row sm:items-center sm:justify-between md:py-12">
+    <p class="text-meta-mono">
+      {SITE.name} · <span class="tabular">© {year}</span>
+    </p>
+    <ul class="flex items-center gap-1 -ml-2">
+      {
+        SOCIALS.map(({ label, href, icon }) => (
+          <li>
+            <a href={href} target="_blank" rel="noopener noreferrer" class="icon-link" aria-label={label}>
+              <Icon name={icon} class="h-5 w-5" />
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <a href="/rss.xml" class="icon-link" aria-label="RSS feed">
+          <Icon name="ri:rss-line" class="h-5 w-5" />
+        </a>
+      </li>
+    </ul>
+  </div>
+</footer>

@@ -1,129 +1,40 @@
 ---
-import { getCollection } from "astro:content";
-
-export const prerender = true;
+import { getCollection, type CollectionEntry } from "astro:content";
+import PostLayout from "../../layouts/PostLayout.astro";
 
 export async function getStaticPaths() {
-  return (await getCollection("blog")).map(({ slug }) => ({
-    params: { slug },
+  const posts = (await getCollection("blog", ({ data }) => !data.draft || import.meta.env.DEV)).sort(
+    (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+  );
+  return posts.map((post, i) => ({
+    params: { slug: post.slug },
+    props: {
+      post,
+      // Newest first, so "next" is the newer post and "prev" is the older one.
+      next: posts[i - 1],
+      prev: posts[i + 1],
+    },
   }));
 }
 
-const { slug } = Astro.params;
-
-if (slug === undefined) {
-  throw new Error("slug is missing");
-}
-
-const posts = (await getCollection("blog")).sort(
-  (blogEntryA, blogEntryB) =>
-    (blogEntryB.data.pubDate || new Date()).getTime() -
-    (blogEntryA.data.pubDate || new Date()).getTime()
-);
-
-const entry = posts.find((entry) => entry.slug === slug);
-if (entry === undefined) {
-  return Astro.redirect("/404");
-}
-
-const { Content } = await entry.render();
+type Props = {
+  post: CollectionEntry<"blog">;
+  prev?: CollectionEntry<"blog">;
+  next?: CollectionEntry<"blog">;
+};
+const { post, prev, next } = Astro.props;
+const { Content, remarkPluginFrontmatter } = await post.render();
+const toNeighbour = (p?: CollectionEntry<"blog">) => (p ? { title: p.data.title, url: `/blog/${p.slug}` } : undefined);
 ---
 
-<Content />
-
-<style is:global>
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    margin-top: 20px;
-    margin-bottom: 10px;
-    font-weight: bold;
-  }
-
-  h1 {
-    font-size: 32px;
-  }
-
-  h2 {
-    font-size: 28px;
-  }
-
-  h3 {
-    font-size: 24px;
-  }
-
-  h4 {
-    font-size: 20px;
-  }
-
-  h5 {
-    font-size: 18px;
-  }
-
-  h6 {
-    font-size: 16px;
-  }
-
-  p {
-    margin: 0 0 10px 0;
-  }
-
-  a {
-    color: #1a0dab;
-    text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration: underline;
-  }
-
-  ul,
-  ol {
-    margin-left: 20px;
-    margin-bottom: 10px;
-  }
-
-  blockquote {
-    margin: 20px 0;
-    padding-left: 15px;
-    border-left: 5px solid #ccc;
-  }
-
-  pre,
-  code {
-    font-family: "Courier New", monospace;
-    background-color: #f4f4f4;
-    border-radius: 5px;
-  }
-
-  pre {
-    padding: 10px;
-    overflow-x: auto;
-  }
-
-  code {
-    padding: 2px 4px;
-    font-size: 90%;
-    color: #d63384;
-  }
-
-  img {
-    max-width: 100%;
-    height: auto;
-  }
-
-  table {
-    border-collapse: collapse;
-    width: 100%;
-  }
-
-  th,
-  td {
-    text-align: left;
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-  }
-</style>
+<PostLayout
+  title={post.data.title}
+  description={post.data.description}
+  pubDate={post.data.pubDate}
+  minutesRead={remarkPluginFrontmatter.minutesRead}
+  category={post.data.category}
+  prev={toNeighbour(prev)}
+  next={toNeighbour(next)}
+>
+  <Content />
+</PostLayout>

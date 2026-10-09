@@ -1,0 +1,67 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<button
+  id="theme-toggle"
+  type="button"
+  class="grid h-9 w-9 place-items-center rounded-[6px] border border-line bg-surface text-muted transition-[color,border-color] duration-160 ease-standard @hover:border-line-strong @hover:text-fg"
+  aria-label="Switch to dark theme"
+>
+  <span class="relative block h-[18px] w-[18px]" aria-hidden="true">
+    <Icon name="ri:sun-line" class="theme-icon theme-icon-sun absolute inset-0 h-[18px] w-[18px]" />
+    <Icon name="ri:moon-line" class="theme-icon theme-icon-moon absolute inset-0 h-[18px] w-[18px]" />
+  </span>
+</button>
+
+<style is:global>
+  .theme-icon {
+    transition:
+      opacity 180ms var(--ease-in-out),
+      transform 180ms var(--ease-in-out);
+  }
+  .theme-icon-moon,
+  [data-theme="dark"] .theme-icon-sun {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  [data-theme="dark"] .theme-icon-moon {
+    opacity: 1;
+    transform: scale(1);
+  }
+</style>
+
+<script>
+  const root = document.documentElement;
+  const btn = document.getElementById("theme-toggle");
+
+  const label = () => {
+    btn?.setAttribute(
+      "aria-label",
+      root.dataset.theme === "dark" ? "Switch to light theme" : "Switch to dark theme",
+    );
+  };
+
+  const apply = (theme: string) => {
+    root.classList.add("theme-transition");
+    root.dataset.theme = theme;
+    root.style.colorScheme = theme;
+    label();
+    window.setTimeout(() => root.classList.remove("theme-transition"), 280);
+  };
+
+  btn?.addEventListener("click", () => {
+    const next = root.dataset.theme === "dark" ? "light" : "dark";
+    apply(next);
+    try {
+      localStorage.setItem("theme", next);
+    } catch {}
+  });
+
+  // Keep other open tabs in sync.
+  window.addEventListener("storage", (e) => {
+    if (e.key === "theme" && (e.newValue === "light" || e.newValue === "dark")) apply(e.newValue);
+  });
+
+  label();
+</script>

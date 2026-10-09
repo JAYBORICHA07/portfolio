@@ -1,23 +1,31 @@
 import rss from "@astrojs/rss";
 import { getCollection } from "astro:content";
-import sanitizeHtml from 'sanitize-html';
-import MarkdownIt from 'markdown-it';
+import sanitizeHtml from "sanitize-html";
+import MarkdownIt from "markdown-it";
+import { SITE } from "../lib/constants";
+
+export const prerender = true;
+
 const parser = new MarkdownIt();
 
 export async function GET(context) {
-  const blog = await getCollection("blog");
+  const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+  );
+
   return rss({
-    title: "Jay Boricha’s Blog",
-    description: "my blog",
+    title: `${SITE.name} — Writing`,
+    description: SITE.description,
     site: context.site,
-    items: blog.map((post) => ({
+    items: posts.map((post) => ({
       title: post.data.title,
-      pubDate: post.data.pubDate,
       description: post.data.description,
-      content: sanitizeHtml(parser.render(post.body)),
-      // Compute RSS link from post `slug`
-      // This example assumes all posts are rendered as `/blog/[slug]` routes
+      pubDate: post.data.pubDate,
       link: `/blog/${post.slug}/`,
+      content: sanitizeHtml(parser.render(post.body), {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+      }),
     })),
+    customData: "<language>en-us</language>",
   });
 }

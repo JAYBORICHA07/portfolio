@@ -3,29 +3,28 @@ import { formatDate } from "../../lib/helpers";
 
 interface Props {
   title: string;
+  description: string;
   date: Date;
   url: string;
+  category?: string;
+  minutesRead?: string;
 }
-
-const { title, date, url } = Astro.props;
+const { title, description, date, url, category, minutesRead } = Astro.props;
 ---
 
-<li
-  class="w-full text-neutral-100 hover:text-neutral-400 ease-in-out transition-colors border-b-neutral-400 border-dashed border-b-1 my-2"
->
+<li class="border-b border-line">
   <a
-    class="text-sm md:text-base decoration-none flex justify-between"
-    href={`/blog/${url}`}
+    href={url}
+    class="group -mx-4 block rounded-[10px] px-4 py-7 transition-colors duration-160 ease-standard @hover:bg-accent-soft/40 sm:py-8"
   >
-    <p class="inline-block whitespace-nowrap">
+    {category && <p class="label-mono text-accent">{category}</p>}
+    <h3 class="mt-2 max-w-[28ch] text-sub font-600 text-fg transition-colors duration-160 ease-standard group-hover:text-accent">
       {title}
+    </h3>
+    {description && <p class="mt-2 max-w-[60ch] text-body text-muted line-clamp-2">{description}</p>}
+    <p class="text-meta-mono mt-3">
+      <time datetime={date.toISOString()}>{formatDate(date)}</time>
+      {minutesRead && <span> · {minutesRead}</span>}
     </p>
-    <time
-      class="text-right tabular-nums"
-      datetime={date.toISOString()}
-      data-date={date.toISOString()}
-    >
-      {formatDate(date)}
-    </time>
   </a>
 </li>

@@ -1,61 +1,128 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Card from "../components/Card/index.astro";
-import IntroCard from "../components/IntroCard.astro";
-import ContactsCard from "../components/ContactsCard.astro";
-import TimeZone from "../components/TimeZoneCard.astro";
-import AboutMe from "../components/AboutMe.astro";
-import Now from "../components/Now.astro";
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import StatusPill from "../components/StatusPill.astro";
+import CopyEmail from "../components/CopyEmail.astro";
+import SectionLabel from "../components/SectionLabel.astro";
+import ProjectRow from "../components/ProjectRow.astro";
+import ContactCard from "../components/ContactCard.astro";
+import HeroDiagram from "../components/HeroDiagram.astro";
+import { featuredProjects } from "../data/projects";
+import { RESUME, SITE, SOCIALS } from "../lib/constants";
+import me from "../assets/me.png";
+
+const whatIDo = [
+  {
+    title: "Documents in, structured data out",
+    body: "Extraction pipelines with schema validation, per-field confidence, and a review step for the cases the model isn't sure about.",
+  },
+  {
+    title: "Assistants that cite their sources",
+    body: "RAG over your own docs and tickets — with citations, an honest “not in the docs” path, and answer quality tracked over time.",
+  },
+  {
+    title: "Agents with guardrails",
+    body: "Tool-calling automation that takes the routine actions, waits for approval on the risky ones, and logs every side effect.",
+  },
+];
 ---
 
-<script>
-  import { stagger, spring, timeline, type TimelineDefinition } from "motion";
-  import { loaderAnimation } from "../lib/constants";
-  const cards = document.querySelectorAll(".card");
+<BaseLayout title={SITE.title} description={SITE.description}>
+  <!-- Hero: never scroll-revealed; painted on first frame. -->
+  <section class="container-page pt-8 md:pt-12">
+    <StatusPill />
 
-  const sequence = [
-    loaderAnimation,
-    [
-      cards,
-      { y: ["40%", "0%"], opacity: [0, 1] },
+    <p class="label-mono mt-8">Software Engineer · AI Systems · Payments Infrastructure · India</p>
+
+    <h1 class="mt-4 max-w-[22ch] text-display font-700 text-fg">
+      I build AI workflows that hold up in production.
+    </h1>
+
+    <!-- Below lg the diagram is dropped entirely and this collapses to one column. -->
+    <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-12">
+      <div>
+        <p class="mt-6 max-w-text text-lead text-muted">
+          Document pipelines, RAG assistants, tool-calling agents — with evals, guardrails, and a human in the loop
+          where it matters. By day I work on offline payments infrastructure at Petpooja, where a retried request can't
+          be allowed to move money twice. I bring that discipline to everything with a model in the loop.
+        </p>
+
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <a href="/projects" class="btn-primary">View work</a>
+          <CopyEmail />
+        </div>
+        <a href="/about" class="group mt-4 inline-flex items-center gap-1 text-small text-muted transition-colors duration-160 ease-standard @hover:text-fg">
+          How I work
+          <Icon name="ri:arrow-right-line" class="h-3.5 w-3.5 transition-transform duration-200 ease-out group-hover:translate-x-px" />
+        </a>
+
+        <div class="mt-12 flex flex-wrap items-center gap-x-6 gap-y-4 border-t border-line pt-6 md:mt-16">
+          <div class="flex items-center gap-3">
+            <Image
+              src={me}
+              alt={`Photo of ${SITE.name}`}
+              width={112}
+              densities={[1, 2]}
+              class="h-14 w-14 rounded-full object-cover object-top"
+              loading="eager"
+            />
+            <span class="text-meta-mono">{SITE.location}</span>
+          </div>
+          <ul class="flex items-center gap-1 -ml-2">
+            {
+              SOCIALS.map(({ label, href, icon }) => (
+                <li>
+                  <a href={href} target="_blank" rel="noopener noreferrer" class="icon-link" aria-label={label}>
+                    <Icon name={icon} class="h-5 w-5" />
+                  </a>
+                </li>
+              ))
+            }
+            <li>
+              <a href={RESUME} class="icon-link w-auto gap-1 px-2 text-small text-muted @hover:text-accent">
+                Resume
+                <Icon name="ri:arrow-right-up-line" class="h-3.5 w-3.5" />
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Decorative: it restates the paragraph, so it stays out of the a11y tree. -->
+      <div class="hidden lg:block">
+        <HeroDiagram />
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="what-i-do" class="container-page reveal mt-16 md:mt-28">
+    <SectionLabel id="what-i-do" label="What I do" />
+    <ul class="grid gap-8 pt-8 md:grid-cols-3 md:gap-10">
       {
-        at: "-0.1",
-        duration: 0.4,
-        delay: stagger(0.3),
-        easing: spring({ velocity: 100, stiffness: 50, damping: 10 }),
-      },
-    ],
-  ];
+        whatIDo.map((item, i) => (
+          <li class="reveal md:border-l md:border-line md:pl-6 first:md:border-l-0 first:md:pl-0" style={`transition-delay: ${i * 60}ms`}>
+            <h3 class="text-sub font-600 text-fg">{item.title}</h3>
+            <p class="mt-2 text-body text-muted">{item.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
 
-  timeline(sequence as TimelineDefinition);
-</script>
+  <section aria-labelledby="selected-work" class="container-page reveal mt-16 md:mt-28">
+    <SectionLabel id="selected-work" label="Selected work">
+      <a href="/projects" class="group inline-flex items-center gap-1 text-small font-500 text-accent @hover:text-accent-hover">
+        All projects
+        <Icon name="ri:arrow-right-line" class="h-3.5 w-3.5 transition-transform duration-200 ease-out group-hover:translate-x-px" />
+      </a>
+    </SectionLabel>
+    <ul>
+      {featuredProjects.map((project, i) => <ProjectRow project={project} index={i} first={i === 0} />)}
+    </ul>
+  </section>
 
-<Layout
-  title="Jay Boricha - Fullstack Developer"
-  description="I'm a developer based in India, passionate about a software developer with strong focus on the frontend, backend and Databases. My primary tools of choice include: TypeScript, React, Next.js, Tailwind CSS, Express.js, and Node.js."
->
-  <main
-    class="text-white m-auto p-2 grid gap-2 max-w-6xl overflow-hidden relative w-full sm:p-4 sm:gap-2 md:grid-cols-2 md:gap-3 md:p-6 lg:h-screen lg:grid-rows-8 lg:grid-cols-4 lg:gap-4 lg:max-h-[800px]"
-  >
-    <IntroCard />
-    <AboutMe />
-    <ContactsCard />
-    <TimeZone />
-    <Now />
-    <Card
-      colSpan="md:col-span-1"
-      rowSpan="md:row-span-1"
-      title="Projects"
-      href="projects"
-    />
-    <Card
-      colSpan="md:col-span-1"
-      rowSpan="md:row-span-2 flex gap-4"
-      title="Blogs"
-      href="/blog"
-    />
-    <Card colSpan="md:col-span-1" rowSpan="md:row-span-1">
-      <p class="text-xs">Copyright - 2024 Crafted by Jay.</p>
-    </Card>
-  </main>
-</Layout>
+  <section class="container-page reveal mt-16 md:mt-28">
+    <ContactCard />
+  </section>
+</BaseLayout>

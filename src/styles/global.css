@@ -1,0 +1,308 @@
+/* ------------------------------------------------------------------ */
+/* Fonts — self-hosted Satoshi (variable).                             */
+/* TODO(jay): convert to woff2 (`pip install fonttools brotli`, then   */
+/* `pyftsubset … --flavor=woff2`) and add a woff2 src ahead of the ttf. */
+/* ------------------------------------------------------------------ */
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-Variable.ttf") format("truetype-variations");
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-VariableItalic.ttf") format("truetype-variations");
+  font-weight: 100 1000;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ------------------------------------------------------------------ */
+/* Design tokens — RGB triplets so utilities can apply alpha.          */
+/* ------------------------------------------------------------------ */
+:root {
+  --c-canvas: 250 248 245;
+  --c-surface: 255 255 255;
+  --c-raised: 255 255 255;
+  --c-sunken: 244 241 234;
+  --c-fg: 26 24 21;
+  --c-muted: 87 81 75;
+  --c-subtle: 115 108 100;
+  --c-line: 231 226 218;
+  --c-line-strong: 214 207 196;
+  --c-accent: 180 69 31;
+  --c-accent-hover: 143 51 18;
+  --c-accent-soft: 251 238 232;
+  --c-accent-border: 239 211 198;
+  --c-accent-contrast: 255 255 255;
+  --c-success: 30 138 95;
+  --c-shadow: 26 24 21;
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --c-canvas: 19 18 16;
+  --c-surface: 28 26 23;
+  --c-raised: 33 30 26;
+  --c-sunken: 14 13 12;
+  --c-fg: 245 242 237;
+  --c-muted: 168 161 154;
+  --c-subtle: 138 130 121;
+  --c-line: 51 47 41;
+  --c-line-strong: 68 63 56;
+  --c-accent: 242 112 60;
+  --c-accent-hover: 255 138 91;
+  --c-accent-soft: 42 26 18;
+  --c-accent-border: 74 46 31;
+  --c-accent-contrast: 19 18 16;
+  --c-success: 63 207 142;
+  --c-shadow: 0 0 0;
+
+  color-scheme: dark;
+}
+
+/* No-JS fallback only: the inline head script always sets data-theme. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --c-canvas: 19 18 16;
+    --c-surface: 28 26 23;
+    --c-raised: 33 30 26;
+    --c-sunken: 14 13 12;
+    --c-fg: 245 242 237;
+    --c-muted: 168 161 154;
+    --c-subtle: 138 130 121;
+    --c-line: 51 47 41;
+    --c-line-strong: 68 63 56;
+    --c-accent: 242 112 60;
+    --c-accent-hover: 255 138 91;
+    --c-accent-soft: 42 26 18;
+    --c-accent-border: 74 46 31;
+    --c-accent-contrast: 19 18 16;
+    --c-success: 63 207 142;
+    --c-shadow: 0 0 0;
+    color-scheme: dark;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+body {
+  background-color: rgb(var(--c-canvas));
+  color: rgb(var(--c-fg));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+::selection {
+  background: rgb(var(--c-accent) / 0.18);
+}
+time,
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Focus ring: instant, never animated. */
+:focus-visible {
+  outline: 2px solid rgb(var(--c-accent));
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Theme switch: colors transition only while <html> carries .theme-transition. */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition:
+    background-color 240ms var(--ease-standard),
+    border-color 240ms var(--ease-standard),
+    color 240ms var(--ease-standard),
+    fill 240ms var(--ease-standard) !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* Components that need pseudo-elements                                */
+/* ------------------------------------------------------------------ */
+
+/* Nav link: underline draws in from the left, leaves to the right. */
+.nav-link {
+  position: relative;
+  color: rgb(var(--c-muted));
+  transition: color 200ms var(--ease-out);
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 1px;
+  background: rgb(var(--c-accent));
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 160ms var(--ease-standard);
+}
+.nav-link[aria-current="page"] {
+  color: rgb(var(--c-fg));
+}
+.nav-link[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:hover {
+    color: rgb(var(--c-fg));
+  }
+  .nav-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+    transition: transform 200ms var(--ease-out);
+  }
+}
+
+/* Title underline that draws left→right when the parent .group is hovered. */
+.draw-underline {
+  background-image: linear-gradient(rgb(var(--c-accent)), rgb(var(--c-accent)));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size 240ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .group:hover .draw-underline {
+    background-size: 100% 1px;
+  }
+}
+
+/* Status dot with a soft expanding ring. */
+.status-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgb(var(--c-success));
+  flex: none;
+}
+.status-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgb(var(--c-success));
+  opacity: 0.4;
+  animation: status-ring 2400ms var(--ease-out) infinite;
+}
+@keyframes status-ring {
+  from {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  to {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Scroll reveal: only applies when JS is present (html.js), so no-JS renders visible. */
+html.js .reveal {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 420ms var(--ease-out),
+    transform 420ms var(--ease-out);
+}
+html.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Sticky header hairline fades in once the page has scrolled. */
+.site-header {
+  border-bottom: 1px solid transparent;
+  transition: border-color 180ms var(--ease-standard);
+}
+.site-header.is-scrolled {
+  border-bottom-color: rgb(var(--c-line));
+}
+
+/* ------------------------------------------------------------------ */
+/* Prose (preset-typography) — mapped once to the theme tokens.        */
+/* ------------------------------------------------------------------ */
+.prose {
+  --un-prose-body: rgb(var(--c-muted));
+  --un-prose-headings: rgb(var(--c-fg));
+  --un-prose-links: rgb(var(--c-accent));
+  --un-prose-lists: rgb(var(--c-subtle));
+  --un-prose-hr: rgb(var(--c-line));
+  --un-prose-captions: rgb(var(--c-subtle));
+  --un-prose-code: rgb(var(--c-fg));
+  --un-prose-borders: rgb(var(--c-line));
+  --un-prose-bg-soft: rgb(var(--c-sunken));
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+.prose strong {
+  color: rgb(var(--c-fg));
+}
+.prose img + em {
+  display: block;
+  text-align: center;
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: rgb(var(--c-subtle));
+  margin-top: -1.25rem;
+}
+@media (max-width: 639px) {
+  .prose {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+}
+
+/* Shiki dual-theme bridge (astro shikiConfig.defaultColor: false). */
+.astro-code,
+.astro-code span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+[data-theme="dark"] .astro-code,
+[data-theme="dark"] .astro-code span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
+}
+.astro-code {
+  background-color: rgb(var(--c-sunken)) !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* Reduced motion — feedback stays, decoration goes.                   */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .status-dot::after {
+    display: none;
+  }
+  html.js .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
