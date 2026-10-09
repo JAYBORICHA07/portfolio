@@ -1,0 +1,13 @@
+---
+interface Props {
+  label: string;
+  id?: string;
+  class?: string;
+}
+const { label, id, class: className = "" } = Astro.props;
+---
+
+<div class={`flex items-baseline justify-between gap-4 border-b border-line pb-3 ${className}`}>
+  <h2 id={id} class="label-mono">{label}</h2>
+  <slot />
+</div>

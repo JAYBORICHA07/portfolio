@@ -1,0 +1,141 @@
+---
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import type { Project } from "../data/projects";
+
+interface Props {
+  project: Project;
+  index: number;
+  /** "compact" = homepage (tagline only); "full" = projects page (description + year/status). */
+  variant?: "compact" | "full";
+  first?: boolean;
+}
+const { project, index, variant = "compact", first = false } = Astro.props;
+const primaryHref = project.demo ?? project.repo;
+const num = String(index + 1).padStart(2, "0");
+const hasLinks = Boolean(project.demo || project.repo);
+const statusLabel = { live: "Live", building: "In progress", archived: "Archived" }[project.status];
+---
+
+<li class="group border-b border-line py-8 md:py-10">
+  <article class="grid gap-6 md:grid-cols-[44fr_56fr] md:gap-10">
+    {
+      project.image ? (
+        <a
+          href={primaryHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          tabindex="-1"
+          aria-hidden="true"
+          class="block aspect-[16/10] overflow-hidden rounded-[10px] border border-line bg-sunken transition-[border-color,box-shadow] duration-260 ease-out group-hover:border-line-strong group-hover:shadow-card-lift dark:group-hover:shadow-none"
+        >
+          <Image
+            src={project.image}
+            alt={project.imageAlt ?? project.title}
+            widths={[480, 800, 1200]}
+            sizes="(min-width: 768px) 44vw, 100vw"
+            class="h-full w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.025]"
+            loading={first ? "eager" : "lazy"}
+          />
+        </a>
+      ) : (
+        <div
+          aria-hidden="true"
+          class="project-cover flex aspect-[16/10] flex-col justify-between rounded-[10px] border border-line bg-sunken p-5 transition-[border-color] duration-260 ease-out group-hover:border-line-strong"
+        >
+          <span class="text-meta-mono">{project.tag}</span>
+          <span class="font-mono text-[3.5rem] font-500 leading-none tracking-[-0.04em] text-line-strong transition-colors duration-260 ease-out group-hover:text-subtle">
+            {num}
+          </span>
+        </div>
+      )
+    }
+
+    <div class="flex flex-col">
+      <p class="text-meta-mono flex flex-wrap items-center gap-x-2">
+        <span>{num}</span>
+        <span aria-hidden="true">·</span>
+        <span>{project.tag}</span>
+        {
+          variant === "full" && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{project.year}</span>
+            </>
+          )
+        }
+        {
+          project.status !== "live" && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span class="uppercase tracking-[0.08em]">{statusLabel}</span>
+            </>
+          )
+        }
+      </p>
+
+      <h3 class="mt-2 text-sub font-600 text-fg">
+        {
+          primaryHref ? (
+            <a href={primaryHref} target="_blank" rel="noopener noreferrer" class="draw-underline">
+              {project.title}
+            </a>
+          ) : (
+            <span class="draw-underline">{project.title}</span>
+          )
+        }
+      </h3>
+
+      <p class="mt-3 max-w-[52ch] text-body text-muted">
+        {variant === "full" ? project.description : project.tagline}
+      </p>
+
+      <p class="text-meta-mono mt-4">
+        <span class="text-subtle">For</span> <span class="text-fg">{project.audience}</span>
+      </p>
+      {project.proof && <p class="text-meta-mono mt-1 text-fg">{project.proof}</p>}
+
+      <p class="text-meta-mono mt-2">{project.stack.join(" · ")}</p>
+
+      <div class="mt-5 flex items-center gap-5 text-small font-500">
+        {
+          project.demo && (
+            <a href={project.demo} target="_blank" rel="noopener noreferrer" class="link-row inline-flex items-center gap-1 text-accent @hover:text-accent-hover">
+              Live
+              <Icon name="ri:arrow-right-up-line" class="link-arrow h-3.5 w-3.5" />
+            </a>
+          )
+        }
+        {
+          project.repo && (
+            <a href={project.repo} target="_blank" rel="noopener noreferrer" class="link-row inline-flex items-center gap-1 text-accent @hover:text-accent-hover">
+              Code
+              <Icon name="ri:arrow-right-up-line" class="link-arrow h-3.5 w-3.5" />
+            </a>
+          )
+        }
+        {!hasLinks && project.status === "building" && <span class="text-small text-subtle">Links land when it ships.</span>}
+      </div>
+    </div>
+  </article>
+</li>
+
+<style is:global>
+  .project-cover {
+    background-image: radial-gradient(rgb(var(--c-line-strong) / 0.55) 1px, transparent 1px);
+    background-size: 16px 16px;
+    background-position: -8px -8px;
+  }
+  .link-row {
+    transition: color 160ms var(--ease-standard);
+  }
+  .link-arrow {
+    transition: transform 200ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .link-row:hover .link-arrow,
+    .group:hover .link-arrow {
+      transform: translate(2px, -2px);
+    }
+  }
+</style>

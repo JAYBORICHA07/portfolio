@@ -1,47 +1,50 @@
 ---
 import { getCollection } from "astro:content";
-import Layout from "../../layouts/Layout.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostRow from "../../components/Blog/PostRow.astro";
+import { LINKS, SITE } from "../../lib/constants";
 
-const posts = (await getCollection("blog"))?.sort(
-  (blogEntryA, blogEntryB) =>
-    (blogEntryB.data.pubDate || new Date()).getTime() -
-    (blogEntryA.data.pubDate || new Date()).getTime()
+const entries = (await getCollection("blog", ({ data }) => !data.draft || import.meta.env.DEV)).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+);
+
+// Reading time is produced by the remark plugin and only surfaces via render().
+const posts = await Promise.all(
+  entries.map(async (post) => {
+    const { remarkPluginFrontmatter } = await post.render();
+    return { post, minutesRead: remarkPluginFrontmatter.minutesRead as string | undefined };
+  }),
 );
 ---
 
-<script>
-  import { timeline, type TimelineDefinition } from "motion";
-  import { loaderAnimation } from "../../lib/constants";
-
-  const sequence = [loaderAnimation];
-
-  timeline(sequence as TimelineDefinition);
-</script>
-
-<Layout
-  title="Jay Boricha's - Blog"
-  description="Software developer with strong focus on the user experience animations and micro interactions"
+<BaseLayout
+  title={`Writing · ${SITE.name}`}
+  description="Notes by Jay Boricha on TypeScript, APIs, and the tools he builds with."
 >
-  <main
-    class="w-screen h-screen flex flex-col justify-start items-start max-w-3xl mx-auto p-8"
-  >
-    <a
-      href="/"
-      class="text-white bg-neutral-900 hover:bg-neutral-800 px-4 py-2 mb-8 border-1 border-solid border-neutral-600 rounded-lg"
-      >Back</a
-    >
-    <h1 class="text-4xl font-bold mb-4 text-neutral-100">Posts</h1>
-    <ul class="w-full">
-      {
-        posts?.map((post) => (
-          <PostRow
-            title={post.data.title || "No title"}
-            date={post.data.pubDate || new Date()}
-            url={post.slug}
-          />
-        ))
-      }
-    </ul>
-  </main>
-</Layout>
+  <div class="container-page pt-10 md:pt-16">
+    <div class="max-w-[720px]">
+      <h1 class="text-title font-700 text-fg">Writing</h1>
+      <p class="mt-4 max-w-text text-lead text-muted">Notes on TypeScript, APIs and the tools I build with.</p>
+
+      <ul class="mt-10 border-t border-line md:mt-14">
+        {
+          posts.map(({ post, minutesRead }) => (
+            <PostRow
+              title={post.data.title}
+              description={post.data.description}
+              date={post.data.pubDate}
+              url={`/blog/${post.slug}`}
+              category={post.data.category}
+              minutesRead={minutesRead}
+            />
+          ))
+        }
+      </ul>
+
+      <p class="mt-8 text-small text-muted">
+        I also post on
+        <a href={LINKS.devto} target="_blank" rel="noopener noreferrer" class="link-accent">dev.to ↗</a>
+      </p>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,29 +1,22 @@
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
-import netlify from "@astrojs/netlify";
+import robotsTxt from "astro-robots-txt";
 import UnoCSS from "@unocss/astro";
 import icon from "astro-icon";
-
-import solidJs from "@astrojs/solid-js";
-import { remarkReadingTime } from "./src/lib/ remark-reading-time.mjs";
-
-import svelte from "@astrojs/svelte";
+import { remarkReadingTime } from "./src/lib/remark-reading-time.mjs";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [
-    sitemap(),
-    solidJs(),
-    UnoCSS({ injectReset: true }),
-    icon(),
-    svelte(),
-  ],
+  site: "https://jayboricha.com",
+  output: "static",
+  integrations: [sitemap(), robotsTxt(), UnoCSS({ injectReset: true }), icon()],
   markdown: {
     remarkPlugins: [remarkReadingTime],
-  },
-  output: "server",
-  adapter: netlify({ edgeMiddleware: true }),
-  vite: {
-    assetsInclude: "**/*.riv",
+    shikiConfig: {
+      // Both themes are emitted as CSS variables; global.css picks one per [data-theme].
+      themes: { light: "github-light", dark: "github-dark-dimmed" },
+      defaultColor: false,
+      wrap: true,
+    },
   },
 });

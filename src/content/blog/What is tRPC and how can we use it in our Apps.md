@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/LayoutBlogPost.astro
 title: "What is tRPC and how can we use it in our Apps"
 description: "In this article, we will explore the tRPC library and its features, which allow us to build efficient and scalable APIs for our applications."
 pubDate: 2023-03-06
