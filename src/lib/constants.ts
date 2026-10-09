@@ -25,7 +25,6 @@ export const SOCIALS = [
 ];
 
 export const NAV = [
-  { label: "Work", href: "/projects" },
   { label: "Writing", href: "/blog" },
   { label: "About", href: "/about" },
 ];

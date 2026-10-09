@@ -9,6 +9,10 @@ import { remarkReadingTime } from "./src/lib/remark-reading-time.mjs";
 export default defineConfig({
   site: "https://jayboricha.com",
   output: "static",
+  // Work section is hidden while it's under development
+  redirects: {
+    "/projects": "/",
+  },
   integrations: [sitemap(), robotsTxt(), UnoCSS({ injectReset: true }), icon()],
   markdown: {
     remarkPlugins: [remarkReadingTime],
