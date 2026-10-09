@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+# Block commits that don't build. Installed via `core.hooksPath` (see "prepare" in package.json).
+set -e
+
+echo "pre-commit: running astro build..."
+pnpm run build

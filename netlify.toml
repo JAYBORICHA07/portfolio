@@ -1,0 +1,7 @@
+[build]
+  command = "pnpm run build"
+  publish = "dist"
+
+[build.environment]
+  # util.styleText (used by @iconify/utils via astro-icon) needs Node >= 20.12
+  NODE_VERSION = "22"
