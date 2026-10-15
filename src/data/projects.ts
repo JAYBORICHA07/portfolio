@@ -46,9 +46,10 @@ export const projects: Project[] = [
       "Charts are built from raw SVG with Catmull-Rom curves, animated path drawing and a spring-tracked crosshair, no chart library. Keyboard-first: Cmd/Ctrl+K command palette, / to search, sortable and filterable table with animated row reordering. Light and dark themes via CSS tokens, and every animation respects prefers-reduced-motion.",
     stack: ["React 19", "TypeScript", "motion", "SVG", "Vite", "CSS custom properties"],
     year: 2026,
-    status: "building",
+    status: "live",
     proof: "Zero chart libraries · keyboard-first · reduced-motion safe",
     repo: "https://github.com/JAYBORICHA07/pulse-dashboard",
+    demo: "https://pulse-dashboard-smoky.vercel.app",
     featured: true,
   },
   {
