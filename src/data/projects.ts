@@ -48,6 +48,7 @@ export const projects: Project[] = [
     year: 2026,
     status: "building",
     proof: "Zero chart libraries · keyboard-first · reduced-motion safe",
+    repo: "https://github.com/JAYBORICHA07/pulse-dashboard",
     featured: true,
   },
   {
