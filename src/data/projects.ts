@@ -36,6 +36,21 @@ export interface Project {
 // a human in the loop where the stakes justify it.
 export const projects: Project[] = [
   {
+    slug: "pulse-dashboard",
+    title: "Pulse — Frontend Dashboard",
+    tag: "Frontend · motion & SVG",
+    audience: "SaaS products, agencies & internal tools",
+    tagline:
+      "A motion-first analytics dashboard with hand-drawn SVG charts, spring physics, a command palette and full reduced-motion support.",
+    description:
+      "Charts are built from raw SVG with Catmull-Rom curves, animated path drawing and a spring-tracked crosshair, no chart library. Keyboard-first: Cmd/Ctrl+K command palette, / to search, sortable and filterable table with animated row reordering. Light and dark themes via CSS tokens, and every animation respects prefers-reduced-motion.",
+    stack: ["React 19", "TypeScript", "motion", "SVG", "Vite", "CSS custom properties"],
+    year: 2026,
+    status: "building",
+    proof: "Zero chart libraries · keyboard-first · reduced-motion safe",
+    featured: true,
+  },
+  {
     slug: "docs-to-data",
     title: "Docs to Data",
     tag: "Structured extraction",
